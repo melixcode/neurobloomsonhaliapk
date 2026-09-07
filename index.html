@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NeuroBloom — Çocuk Dostu Dijital Destek Platformu 🌸</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+
+    <!-- ONBOARDING OVERLAY -->
+    <div id="onboarding-modal" class="modal-overlay">
+        <div class="modal-card onboarding-card">
+            <div class="neurobot-avatar large bounce">🤖</div>
+            <div id="onboarding-step-1" class="onboarding-step active">
+                <h2>NeuroBloom 🌸</h2>
+                <p class="bot-bubble">“Merhaba, ben NeuroBot. Bu yolculukta senin hep yanında olacağım.”</p>
+                <p class="sub-text">NeuroBloom, oyunlaştırılmış egzersizleriyle çocuk dostu bir mobil destek platformudur.</p>
+                <button class="btn btn-primary" onclick="nextOnboardingStep(2)">Hadi Başlayalım! 🚀</button>
+            </div>
+            <div id="onboarding-step-2" class="onboarding-step">
+                <p class="bot-bubble">“Hadi seni birazcık tanıyalım!”</p>
+                <div class="form-group">
+                    <label>Adın Nedir?</label>
+                    <input type="text" id="user-name-input" placeholder="Örn: Nisa">
+                </div>
+                <div class="form-group">
+                    <label>Kaç Yaşındasın?</label>
+                    <input type="number" id="user-age-input" min="6" max="13" value="8">
+                </div>
+                <div class="form-group">
+                    <label>Cinsiyet</label>
+                    <select id="user-gender-input">
+                        <option value="Kız">Kız</option>
+                        <option value="Erkek">Erkek</option>
+                        <option value="Belirtmek İstemiyorum">Belirtmek İstemiyorum</option>
+                    </select>
+                </div>
+                <button class="btn btn-success" onclick="completeOnboarding()">Tammadır! 🎉</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP CONTAINER -->
+    <div class="app-container">
+        
+        <!-- HEADER -->
+        <header class="app-header">
+            <div class="user-profile-summary">
+                <div class="avatar" id="header-avatar">🌸</div>
+                <div>
+                    <h3 id="welcome-text">Merhaba Nisa! 🌸</h3>
+                    <span class="level-badge" id="user-points-badge">⭐ 0 Puan</span>
+                </div>
+            </div>
+            <button class="icon-btn" onclick="openParentModal()" title="Ebeveyn Paneli"><i data-lucide="shield"></i></button>
+        </header>
+
+        <!-- DYNAMIC PAGE CONTENT CONTAINER -->
+        <main id="main-content">
+
+            <!-- PAGE: HOME -->
+            <section id="page-home" class="page active">
+                <!-- NeuroBot Greeting Card -->
+                <div class="card neurobot-card">
+                    <div class="neurobot-flex">
+                        <div class="neurobot-avatar idle">🤖</div>
+                        <div class="speech-bubble">
+                            <p id="home-bot-message">Bugün nasılsın bakalım?</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mood Selector -->
+                <div class="card">
+                    <h4>Bugünkü Duygun</h4>
+                    <div class="mood-selector">
+                        <button onclick="selectMood('😊', 'Mutlu')" class="mood-btn">😊<br><span>Mutlu</span></button>
+                        <button onclick="selectMood('😌', 'Sakin')" class="mood-btn">😌<br><span>Sakin</span></button>
+                        <button onclick="selectMood('😐', 'Normal')" class="mood-btn">😐<br><span>Normal</span></button>
+                        <button onclick="selectMood('😔', 'Üzgün')" class="mood-btn">😔<br><span>Üzgün</span></button>
+                        <button onclick="selectMood('😟', 'Endişeli')" class="mood-btn">😟<br><span>Endişeli</span></button>
+                    </div>
+                    <!-- Haftalık Duygu Takvimi -->
+                    <div class="weekly-mood-grid" id="weekly-mood-grid">
+                        <!-- JS ile dolacak -->
+                    </div>
+                </div>
+
+                <!-- Weekly Stats Widget -->
+                <div class="card">
+                    <h4>Haftalık İlerlemen 📈</h4>
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <span class="stat-num" id="stat-ex-count">0</span>
+                            <span class="stat-label">Egzersiz</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-num" id="stat-game-count">0</span>
+                            <span class="stat-label">Oyun</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-num" id="stat-weekly-progress">%0</span>
+                            <span class="stat-label">Hedef</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PAGE: EXERCISES -->
+            <section id="page-exercises" class="page">
+                <div class="tab-header">
+                    <button class="tab-btn active" onclick="switchExerciseTab('tongue')">👅 Dil Egzersizleri</button>
+                    <button class="tab-btn" onclick="switchExerciseTab('lip')">👄 Dudak Egzersizleri</button>
+                </div>
+
+                <div id="exercise-list" class="exercise-grid">
+                    <!-- JS ile Egzersiz Kartları render edilecek -->
+                </div>
+            </section>
+
+            <!-- PAGE: GAMES -->
+            <section id="page-games" class="page">
+                <h3>Eğlenceli Oyunlar 🎮</h3>
+                <div class="games-grid">
+                    <div class="game-card" onclick="startWheelGame()">
+                        <div class="game-icon">🎡</div>
+                        <div class="game-info">
+                            <h4>Harf Çarkı</h4>
+                            <p>Çarkı çevir, kelimeleri ve heceleri bul!</p>
+                        </div>
+                        <button class="btn btn-sm">Oyna</button>
+                    </div>
+
+                    <div class="game-card" onclick="startFishGame()">
+                        <div class="game-icon">🐟</div>
+                        <div class="game-info">
+                            <h4>Hece Balıkları</h4>
+                            <p>Doğru heceli balığı yakala ve seslet!</p>
+                        </div>
+                        <button class="btn btn-sm">Oyna</button>
+                    </div>
+                </div>
+
+                <!-- GAME CONTAINER VIEW (Görünür / Gizlenir) -->
+                <div id="active-game-area" class="game-view-container hidden">
+                    <!-- İçerik Dinamik Yüklenecek -->
+                </div>
+            </section>
+
+            <!-- PAGE: ASSISTANT -->
+            <section id="page-assistant" class="page">
+                <div class="assistant-header card">
+                    <div class="neurobot-avatar clickable" onclick="openRoomModal()">🤖</div>
+                    <div>
+                        <h4>NeuroBot Asistan</h4>
+                        <p class="sub-text">Odamı görmek için bana dokun! 🧸</p>
+                    </div>
+                </div>
+
+                <div class="chat-container card">
+                    <div class="chat-messages" id="chat-messages">
+                        <div class="chat-msg bot">
+                            <span>🤖</span>
+                            <p>İşte, sana nasıl yardımcı olabilirim?</p>
+                        </div>
+                    </div>
+                    <div class="chat-input-area">
+                        <input type="text" id="chat-input" placeholder="Mesajını yaz...">
+                        <button class="btn btn-primary" onclick="sendChatMessage()"><i data-lucide="send"></i></button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PAGE: PROGRESS -->
+            <section id="page-progress" class="page">
+                <h3>Gelişim Raporun 📊</h3>
+                <div class="card">
+                    <h4>Bu Haftaki İlerlemen 🌟</h4>
+                    <div class="progress-item">
+                        <span>Tamamlanan Dil Egzersizi</span>
+                        <progress id="prog-tongue" max="9" value="0"></progress>
+                    </div>
+                    <div class="progress-item">
+                        <span>Tamamlanan Dudak Egzersizi</span>
+                        <progress id="prog-lip" max="12" value="0"></progress>
+                    </div>
+                </div>
+                <div class="card">
+                    <h4>Kazanılan Ödüller 🏆</h4>
+                    <div class="badges-grid" id="badges-grid">
+                        <div class="badge-item locked">🌟 İlk Adım</div>
+                        <div class="badge-item locked">👅 Dil Şampiyonu</div>
+                        <div class="badge-item locked">🎯 Kelime Avcısı</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PAGE: PREMIUM -->
+            <section id="page-premium" class="page">
+                <div class="premium-header text-center">
+                    <h2>NeuroBloom Premium ⭐</h2>
+                    <p>İhtiyacına uygun NeuroBloom paketini keşfet.</p>
+                </div>
+
+                <div class="premium-cards">
+                    <div class="card plan-card">
+                        <h3>🌱 Başlangıç Paketi</h3>
+                        <p class="price">300 TL / Ay</p>
+                        <p class="sub-price">Yıllık: 3.600 TL</p>
+                        <ul>
+                            <li>✓ Tüm temel egzersizler</li>
+                            <li>✓ Günlük ilerleme takibi</li>
+                        </ul>
+                        <button class="btn btn-outline" onclick="selectPlan('Başlangıç')">Seç</button>
+                    </div>
+
+                    <div class="card plan-card featured">
+                        <span class="pop-tag">En Popüler</span>
+                        <h3>🧑‍⚕️ Terapist Destekli Paket</h3>
+                        <p class="price">1.200 TL / Ay</p>
+                        <p class="sub-price">Yıllık: 14.400 TL</p>
+                        <ul>
+                            <li>✓ Tüm oyunlar ve egzersizler</li>
+                            <li>✓ Terapist takip paneli entegrasyonu</li>
+                            <li>✓ Detaylı analiz raporları</li>
+                        </ul>
+                        <button class="btn btn-primary" onclick="selectPlan('Terapist Destekli')">Seç</button>
+                    </div>
+
+                    <div class="card plan-card">
+                        <h3>🏢 Kurum Lisans Paketi</h3>
+                        <p class="price">10.000 TL / Ay</p>
+                        <p class="sub-price">Yıllık: 120.000 TL</p>
+                        <ul>
+                            <li>✓ Sınırsız çocuk kaydı</li>
+                            <li>✓ Özel klinik paneli</li>
+                        </ul>
+                        <button class="btn btn-outline" onclick="selectPlan('Kurumsal')">Seç</button>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- HARDWARE INTERACTION MODAL (CAMERA/MIC EXERCISES) -->
+        <div id="exercise-active-modal" class="modal-overlay hidden">
+            <div class="modal-card">
+                <button class="close-btn" onclick="closeExerciseModal()">✕</button>
+                <h3 id="ex-modal-title">Egzersiz Başlığı</h3>
+                <p id="ex-modal-desc">Açıklama</p>
+                
+                <!-- Camera Feed Viewport -->
+                <div id="camera-viewport" class="camera-viewport hidden">
+                    <video id="webcam-video" autoplay playsinline muted></video>
+                    <div class="face-guide-overlay">👄</div>
+                </div>
+
+                <!-- Live Audio Visualizer -->
+                <div id="mic-viewport" class="mic-viewport hidden">
+                    <div class="mic-icon pulse">🎙️</div>
+                    <div class="audio-bar-container">
+                        <div id="audio-bar" class="audio-bar"></div>
+                    </div>
+                    <p id="mic-feedback-text">Ses bekleniyor...</p>
+                </div>
+
+                <!-- Timer & Reps -->
+                <div class="exercise-controls">
+                    <div class="timer-display" id="ex-timer">00:05</div>
+                    <div class="rep-display" id="ex-reps">Tekrar: 0/5</div>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn-success" id="ex-start-btn" onclick="startCurrentExerciseFlow()">Başla 🚀</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PARENT / THERAPIST MODAL -->
+        <div id="parent-modal" class="modal-overlay hidden">
+            <div class="modal-card">
+                <button class="close-btn" onclick="closeParentModal()">✕</button>
+                <h3>👨‍👩‍👧 Ebeveyn & Terapist Alanı</h3>
+                <p>Çocuğunuzun performans detayları aşağıda özetlenmiştir.</p>
+                <div class="card stats-detail">
+                    <p><strong>Son Giriş:</strong> Bugün</p>
+                    <p><strong>Ruh Hali Geçmişi:</strong> <span id="parent-mood-log">Kayıt Yok</span></p>
+                    <p><strong>Toplam Egzersiz Tamamlama:</strong> <span id="parent-ex-log">0</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEUROBOT ROOM MODAL -->
+        <div id="room-modal" class="modal-overlay hidden">
+            <div class="modal-card room-card">
+                <button class="close-btn" onclick="closeRoomModal()">✕</button>
+                <h3>🧸 NeuroBot'un Odası</h3>
+                <div class="room-viewport">
+                    <div class="bot-in-room">🤖</div>
+                    <div class="room-item" id="room-item-display">🎨 Resim Çerçevesi</div>
+                </div>
+                <p>Puanlarınla odayı süsle!</p>
+                <button class="btn btn-primary" onclick="buyRoomItem('Süslü Halı', 50)">Süslü Halı Al (50 ⭐)</button>
+            </div>
+        </div>
+
+        <!-- BOTTOM NAVIGATION BAR -->
+        <nav class="bottom-nav">
+            <button class="nav-btn active" onclick="switchPage('home', this)">
+                <i data-lucide="home"></i>
+                <span>Ana Ekran</span>
+            </button>
+            <button class="nav-btn" onclick="switchPage('exercises', this)">
+                <i data-lucide="smile"></i>
+                <span>Egzersizler</span>
+            </button>
+            <button class="nav-btn" onclick="switchPage('games', this)">
+                <i data-lucide="gamepad-2"></i>
+                <span>Oyunlar</span>
+            </button>
+            <button class="nav-btn" onclick="switchPage('assistant', this)">
+                <i data-lucide="bot"></i>
+                <span>Asistan</span>
+            </button>
+            <button class="nav-btn" onclick="switchPage('progress', this)">
+                <i data-lucide="bar-chart-3"></i>
+                <span>İlerleme</span>
+            </button>
+            <button class="nav-btn" onclick="switchPage('premium', this)">
+                <i data-lucide="star"></i>
+                <span>Premium</span>
+            </button>
+        </nav>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
